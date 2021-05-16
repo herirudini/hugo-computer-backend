@@ -1,5 +1,5 @@
 {
-  "name": "e-commerce-back-end",
+  "name": "hugo-computer-backend",
   "version": "1.0.0",
   "description": "back-end program",
   "main": "APIs/app.js",
@@ -10,7 +10,6 @@
   "scripts": {
     "start": "node ./deploy/APIs/app.js",
     "dev": "env-cmd -f ./config/test.env ts-node-dev --respawn --pretty ./APIs/app.ts",
-    "build": "rm -rf build/ && prettier --writer source/ && tsc",
     "ts": "nodemon APIs/app.ts"
   },
   "author": "Heri Rudini",
