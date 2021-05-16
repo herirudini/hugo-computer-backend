@@ -2,7 +2,11 @@
   "name": "e-commerce-back-end",
   "version": "1.0.0",
   "description": "back-end program",
-  "main": "index.js",
+  "main": "APIs/app.js",
+  "engines": {
+    "node": "10.x",
+    "npm": "6.x"
+  },
   "scripts": {
     "start": "node ./deploy/APIs/app.js",
     "dev": "env-cmd -f ./config/test.env ts-node-dev --respawn --pretty ./APIs/app.ts",
