@@ -5,13 +5,13 @@ import { Customer } from '../models/Customer'
 
 class invoiceController {
     static listInvoices(req: Request, res: Response, next: NextFunction) {
-        Invoice.find({ customer_id: (<any>req).customer_id })
+        Invoice.find({ customer_id: (<any>req).customer_id, shippingStatus: { $in: ["on process", "trouble", "standby"] } })
 
             .then((result) => {
                 if (result == null) {
                     throw ({ name: 'not_found' })
                 }
-                res.status(200).json({ success: true, message: "Purchasement history:", data: result });
+                res.status(200).json({ success: true, message: "Invoices:", data: result });
             })
             .catch((err) => {
                 next(err)
@@ -67,6 +67,19 @@ class invoiceController {
         finally {
             res.status(201).json({ success: true, message: "Invoice updated", data: updateShipping })
         }
+    }
+    static historyInvoices(req: Request, res: Response, next: NextFunction) {
+        Invoice.find({ customer_id: (<any>req).customer_id, shippingStatus: "arrived" })
+
+            .then((result) => {
+                if (result == null) {
+                    throw ({ name: 'not_found' })
+                }
+                res.status(200).json({ success: true, message: "Purchasement history:", data: result });
+            })
+            .catch((err) => {
+                next(err)
+            })
     }
 }
 

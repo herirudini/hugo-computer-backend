@@ -2,26 +2,26 @@ import mongoose, { Schema } from 'mongoose';
 
 interface Invoice {
     customer_id: string,
+    orderList: object[]
+    paymentStatus: string,
+    shippingStatus: string,
     bills: string,
     paymentMethod: string,
-    transferCode: string,
-    paid: string,
     shippingMethod: string,
-    arrived: string,
+    transferCode: string,
     address: object,
-    orderList: object[]
 }
 
 interface InvoiceData extends mongoose.Document {
     customer_id: string,
+    orderList: object[]
+    paymentStatus: string,
+    shippingStatus: string,
     bills: string,
     paymentMethod: string,
-    transferCode: string,
-    paid: string,
     shippingMethod: string,
-    arrived: string,
+    transferCode: string,
     address: object,
-    orderList: object[]
 }
 
 interface InvoiceModelInterface extends mongoose.Model<InvoiceData> {

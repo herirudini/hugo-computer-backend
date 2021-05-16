@@ -57,6 +57,7 @@ class productController {
         const product: any = await Product.findById(product_id);
         const productName = product.name;
         const priceTag: number = product.priceTag;
+        const productImage: string = product.image;
         const productStock: number = product.stock
         const quantity: number = await req.body.quantity;
         const measureStock: number = productStock - quantity
@@ -82,6 +83,7 @@ class productController {
             } else {
                 // console.log("orderIsNotExist")
                 createOrder = await Order.create({
+                    productImage: productImage,
                     customer_id: customer_id,
                     product_id: product_id,
                     productName: productName,

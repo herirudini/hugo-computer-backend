@@ -11,18 +11,22 @@ class invoiceRouter {
         this.invoiceDetails()
         this.confirmPayment()
         this.confirmShipment()
+        this.historyInvoices()
     }
     public listInvoices(): void {
-        this.router.get('/invoices', invoiceController.listInvoices);
+        this.router.get('/invoices/on-process', invoiceController.listInvoices);
     }
     public invoiceDetails(): void {
-        this.router.get('/invoices/:invoice_id', auth.invoiceAuthor, invoiceController.invoiceDetails);
+        this.router.get('/invoices/on-process/:invoice_id', auth.invoiceAuthor, invoiceController.invoiceDetails);
     }
     public confirmPayment(): void {
-        this.router.put('/invoices/:invoice_id', auth.invoiceAuthor, invoiceController.confirmPayment);
+        this.router.put('/invoices/on-process/:invoice_id', auth.invoiceAuthor, invoiceController.confirmPayment);
     }
     public confirmShipment(): void {
-        this.router.patch('/invoices/:invoice_id', auth.invoiceAuthor, invoiceController.confirmShipment);
+        this.router.patch('/invoices/on-process/:invoice_id', auth.invoiceAuthor, invoiceController.confirmShipment);
+    }
+    public historyInvoices(): void {
+        this.router.get('/invoices/history', invoiceController.historyInvoices);
     }
 }
 
