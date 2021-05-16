@@ -4,7 +4,8 @@
   "description": "back-end program",
   "main": "index.js",
   "scripts": {
-    "start": "env-cmd -f ./config/test.env ts-node-dev --respawn --pretty ./APIs/app.ts",
+    "start": "node ./deploy/app.js",
+    "dev": "env-cmd -f ./config/test.env ts-node-dev --respawn --pretty ./APIs/app.ts",
     "build": "rm -rf build/ && prettier --writer source/ && tsc",
     "ts": "nodemon APIs/app.ts"
   },
