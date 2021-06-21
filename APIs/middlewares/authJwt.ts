@@ -1,40 +1,48 @@
 import { Request, Response, NextFunction } from 'express'
 import * as jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt'
-import { Customer } from '../models/Customer'
+import { User } from '../models/User'
 import { Order } from '../models/Order'
 import { Invoice } from '../models/Invoice'
 import { Message } from '../models/Message'
 
 
 class auth {
+    static loginValidator(req: Request, res: Response, next: NextFunction) {
+        User.exists({ email: (<any>req).body.email })
+            .then((result) => {
+                if (!result) {
+                    throw ({ name: 'not_verified' })
+                } else
+                    next()
+            })
+            .catch((err) => {
+                next(err)
+            })
+    }
     static async authentication(req: Request, res: Response, next: NextFunction) {
         const access_token: string = (<any>req).headers.access_token;
         const ip = req.header('x-forwarded-for') || req.connection.remoteAddress;
 
         try {
-            // console.log("access_tokennya: " + access_token)
 
             if (!access_token) {
                 console.log("Incorrect Token: Please Login")
                 throw ({ name: 'missing_token' })
-                // res.redirect('../../login')
 
             } else {
                 jwt.verify(access_token, process.env.TOKEN as string, (err, decoded: any) => {
                     if (err) {
                         throw ({ name: 'invalid_token' })
                     }
-                    (<any>req).customer_id = decoded.id;
+                    (<any>req).user_id = decoded.id;
                 })
-                const author: any = await Customer.findById((<any>req).customer_id);
-                const logToken = author.logToken;
+                const author: any = await User.findById((<any>req).user_id);
                 const logIp = author.logIp;
                 let ipExist = logIp.includes(ip)
 
-                if (ipExist == false || logToken != access_token) {
-                    throw ({ name: 'invalid_token' })
-                    // res.redirect('../login');
+                if (ipExist == false) {
+                    throw ({ name: 'unauthorized' })
                 } else {
                     console.log("berhasil lewat Authentication")
                     next();
@@ -47,8 +55,8 @@ class auth {
         }
     }
     static async uniqueData(req: Request, res: Response, next: NextFunction) { //res JANGAN DIHAPUS nanti tidak terdeteksi oleh router
-        const checkEmail: any = await Customer.find({ email: req.body.new_email })
-        const checkPhone: any = await Customer.find({ phone: req.body.new_phone })
+        const checkEmail: any = await User.find({ email: req.body.new_email })
+        const checkPhone: any = await User.find({ phone: req.body.new_phone })
         try {
             if (checkEmail.length != 0) {
                 throw ({ name: 'unique_email' })
@@ -64,7 +72,7 @@ class auth {
         }
     }
     static async twoStepAuth(req: Request, res: Response, next: NextFunction) {
-        const author: any = await Customer.findById((<any>req).customer_id).select('+password')
+        const author: any = await User.findById((<any>req).user_id).select('+password')
 
         try {
             if (!req.body.password) {
@@ -76,7 +84,7 @@ class auth {
                 } else {
                     next()
                 }
-            } 
+            }
         }
         catch (err) {
             console.log(err)
@@ -88,7 +96,7 @@ class auth {
         try {
             if (!message) {
                 throw ({ name: 'not_found' })
-            } else if ((<any>req).customer_id != message.customer_id) {
+            } else if ((<any>req).user_id != message.user_id) {
                 throw ({ name: 'unauthorized' })
             } else {
                 next()
@@ -104,7 +112,7 @@ class auth {
         try {
             if (!order) {
                 throw ({ name: 'not_found' })
-            } else if ((<any>req).customer_id != order.customer_id) {
+            } else if ((<any>req).user_id != order.user_id) {
                 throw ({ name: 'unauthorized' })
             } else {
                 next()
@@ -120,7 +128,22 @@ class auth {
         try {
             if (!invoice) {
                 throw ({ name: 'not_found' })
-            } else if ((<any>req).customer_id != invoice.customer_id) {
+            } else if ((<any>req).user_id != invoice.user_id) {
+                throw ({ name: 'unauthorized' })
+            } else {
+                next()
+            }
+        }
+        catch (err) {
+            console.log(err)
+            next(err)
+        }
+    }
+    static async adminAuth(req: Request, res: Response, next: NextFunction) {
+        const author: any = await User.findById((<any>req).user_id).select('+password')
+
+        try {
+            if (!author.isAdmin) {
                 throw ({ name: 'unauthorized' })
             } else {
                 next()

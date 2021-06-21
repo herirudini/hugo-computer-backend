@@ -18,7 +18,7 @@ class orderController {
         return __awaiter(this, void 0, void 0, function* () {
             let orderList;
             try {
-                orderList = yield Order_1.Order.find({ customer_id: req.customer_id });
+                orderList = yield Order_1.Order.find({ user_id: req.user_id });
             }
             catch (err) {
                 next(err);
@@ -76,10 +76,10 @@ class orderController {
     }
     static generateInvoice(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
-            const customer_id = req.customer_id;
-            const address = yield Address_1.Address.findOne({ customer_id: customer_id, status: "default address" });
-            const countOrder = yield Order_1.Order.countDocuments({ customer_id: customer_id });
-            const orderList = yield Order_1.Order.find({ customer_id: customer_id });
+            const user_id = req.user_id;
+            const address = yield Address_1.Address.findOne({ user_id: user_id, status: "default address" });
+            const countOrder = yield Order_1.Order.countDocuments({ user_id: user_id });
+            const orderList = yield Order_1.Order.find({ user_id: user_id });
             const paymentMethod = yield req.body.payment_method;
             const shippingMethod = yield req.body.shipping_method;
             let bills = 0;
@@ -100,7 +100,7 @@ class orderController {
                     }
                     ;
                     createInvoice = yield Invoice_1.Invoice.create({
-                        customer_id: customer_id,
+                        user_id: user_id,
                         bills: bills,
                         paymentMethod: paymentMethod,
                         transferCode: transferCode,
@@ -108,7 +108,7 @@ class orderController {
                         address: address,
                         orderList: orderList,
                     });
-                    wipeOrderList = yield Order_1.Order.deleteMany({ customer_id: customer_id });
+                    wipeOrderList = yield Order_1.Order.deleteMany({ user_id: user_id });
                     res.status(201).json({ success: true, message: "Check your invoice. Pay your bills via transfer to the bank number listed below:", data: createInvoice });
                 }
             }

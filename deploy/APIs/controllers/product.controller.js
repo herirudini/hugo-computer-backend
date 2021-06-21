@@ -61,9 +61,9 @@ class productController {
     }
     static addToCart(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
-            const customer_id = yield req.customer_id;
+            const user_id = yield req.user_id;
             const product_id = req.params.product_id;
-            const orderIsExsist = yield Order_1.Order.countDocuments({ customer_id: customer_id, product_id: product_id });
+            const orderIsExsist = yield Order_1.Order.countDocuments({ user_id: user_id, product_id: product_id });
             const product = yield Product_1.Product.findById(product_id);
             const productName = product.name;
             const priceTag = product.priceTag;
@@ -84,7 +84,7 @@ class productController {
                     res.status(400).json({ success: false, message: `Insufficient stock available.Product stock remaining: ${productStock}`, data: product });
                 }
                 else if (orderIsExsist == 1) {
-                    const existedOrder = yield Order_1.Order.findOne({ customer_id: customer_id, product_id: product_id });
+                    const existedOrder = yield Order_1.Order.findOne({ user_id: user_id, product_id: product_id });
                     const order_id = existedOrder.id;
                     // console.log("orderId: " + order_id)
                     // console.log("increment:" + sendData)
@@ -95,7 +95,7 @@ class productController {
                     // console.log("orderIsNotExist")
                     createOrder = yield Order_1.Order.create({
                         productImage: productImage,
-                        customer_id: customer_id,
+                        user_id: user_id,
                         product_id: product_id,
                         productName: productName,
                         quantity: quantity,

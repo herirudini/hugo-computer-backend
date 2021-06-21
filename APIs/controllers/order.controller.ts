@@ -9,7 +9,7 @@ class orderController {
         let orderList;
 
         try {
-            orderList = await Order.find({ customer_id: (<any>req).customer_id })
+            orderList = await Order.find({ user_id: (<any>req).user_id })
         }
         catch (err) {
             next(err)
@@ -61,10 +61,10 @@ class orderController {
         }
     }
     static async generateInvoice(req: Request, res: Response, next: NextFunction) {
-        const customer_id = (<any>req).customer_id;
-        const address = await Address.findOne({ customer_id: customer_id, status: "default address" })
-        const countOrder = await Order.countDocuments({ customer_id: customer_id });
-        const orderList = await Order.find({ customer_id: customer_id });
+        const user_id = (<any>req).user_id;
+        const address = await Address.findOne({ user_id: user_id, status: "default address" })
+        const countOrder = await Order.countDocuments({ user_id: user_id });
+        const orderList = await Order.find({ user_id: user_id });
         const paymentMethod = await req.body.payment_method;
         const shippingMethod = await req.body.shipping_method;
         let bills: number = 0;
@@ -83,7 +83,7 @@ class orderController {
                     bills += orderList[i].totalPrice
                 };
                 createInvoice = await Invoice.create({
-                    customer_id: customer_id,
+                    user_id: user_id,
                     bills: bills,
                     paymentMethod: paymentMethod,
                     transferCode: transferCode,
@@ -91,7 +91,7 @@ class orderController {
                     address: address,
                     orderList: orderList,
                 })
-                wipeOrderList = await Order.deleteMany({ customer_id: customer_id });
+                wipeOrderList = await Order.deleteMany({ user_id: user_id });
                 res.status(201).json({ success: true, message: "Check your invoice. Pay your bills via transfer to the bank number listed below:", data: createInvoice })
             }
         }

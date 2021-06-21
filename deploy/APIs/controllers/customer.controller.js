@@ -19,15 +19,15 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const Customer_1 = require("../models/Customer");
+const User_1 = require("../models/User");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jwt = __importStar(require("jsonwebtoken"));
-class customerController {
+class userController {
     static signup(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            let createCustomer;
+            let createUser;
             try {
-                createCustomer = yield Customer_1.Customer.create({
+                createUser = yield User_1.User.create({
                     phone: req.body.new_phone,
                     email: req.body.new_email,
                     password: bcrypt_1.default.hashSync(req.body.new_password, 8),
@@ -38,17 +38,17 @@ class customerController {
                 res.status(422).json({ success: false, message: "signup failed!", data: err });
             }
             finally {
-                res.status(201).json({ success: true, message: "signup success: please login", data: createCustomer });
+                res.status(201).json({ success: true, message: "signup success: please login", data: createUser });
             }
         });
     }
     static login(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
-            const customer = yield Customer_1.Customer.findOne({ email: req.body.email }).select('+password');
-            const passwordIsValid = bcrypt_1.default.compareSync(req.body.password, customer.password);
-            const token = jwt.sign({ id: customer.id }, process.env.TOKEN);
+            const user = yield User_1.User.findOne({ email: req.body.email }).select('+password');
+            const passwordIsValid = bcrypt_1.default.compareSync(req.body.password, user.password);
+            const token = jwt.sign({ id: user.id }, process.env.TOKEN);
             const ip = req.header('x-forwarded-for') || req.connection.remoteAddress;
-            const logIp = customer.logIp;
+            const logIp = user.logIp;
             let ipExist = logIp.includes(ip);
             let signCredentials;
             let credentialsData;
@@ -56,11 +56,11 @@ class customerController {
             try {
                 // console.log(typeof(logIp))
                 console.log("login Controller Ip exist?: " + ipExist);
-                if (!customer) { //wrong email
+                if (!user) { //wrong email
                     throw ({ name: 'not_verified' });
                 }
                 else if (passwordIsValid) { //true email and password
-                    signCredentials = yield Customer_1.Customer.findOneAndUpdate({ email: req.body.email }, credentialsData, { new: true });
+                    signCredentials = yield User_1.User.findOneAndUpdate({ email: req.body.email }, credentialsData, { new: true });
                     res.status(202).json({ success: true, message: "success login", data: signCredentials, AccessToken: token });
                     // res.redirect('../home'); THIS IS ERROR: auth.atuhentication is triggered by idk why
                 }
@@ -80,7 +80,7 @@ class customerController {
             let signCredentials;
             try {
                 console.log("berhasil masuk logout controller");
-                signCredentials = yield Customer_1.Customer.findByIdAndUpdate(req.customer_id, { $pull: { logIp: ip }, logToken: "" }, { new: true });
+                signCredentials = yield User_1.User.findByIdAndUpdate(req.user_id, { $pull: { logIp: ip }, logToken: "" }, { new: true });
             }
             catch (err) {
                 console.log(err);
@@ -94,12 +94,12 @@ class customerController {
     }
     static myDetails(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
-            Customer_1.Customer.findById(req.customer_id).populate(['invoices', 'address', 'wishlist'])
+            User_1.User.findById(req.user_id).populate(['invoices', 'address', 'wishlist'])
                 .then((result) => {
                 if (result == null) {
                     throw ({ name: 'not_found' });
                 }
-                res.status(200).json({ success: true, message: "Customer data", data: result });
+                res.status(200).json({ success: true, message: "User data", data: result });
             })
                 .catch((err) => {
                 next(err);
@@ -113,7 +113,7 @@ class customerController {
             if (!newData[key])
                 delete newData[key];
         }
-        Customer_1.Customer.findByIdAndUpdate(req.customer_id, newData, { new: true })
+        User_1.User.findByIdAndUpdate(req.user_id, newData, { new: true })
             .then((result) => {
             res.status(200).json({ success: true, message: "Email/Phone changed! Please Login", data: result });
             next();
@@ -123,7 +123,7 @@ class customerController {
         });
     }
     static changePassword(req, res, next) {
-        Customer_1.Customer.findByIdAndUpdate(req.customer_id, { password: bcrypt_1.default.hashSync(req.body.new_password, 8) }, { new: true }).select('+password')
+        User_1.User.findByIdAndUpdate(req.user_id, { password: bcrypt_1.default.hashSync(req.body.new_password, 8) }, { new: true }).select('+password')
             .then((result) => {
             res.status(200).json({ success: true, message: "Password changed! Please Login" });
             next();
@@ -134,4 +134,4 @@ class customerController {
         });
     }
 }
-exports.default = customerController;
+exports.default = userController;

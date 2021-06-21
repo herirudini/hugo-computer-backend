@@ -9,7 +9,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
 const validator = require('mongoose-validators');
-const customerSchema = new mongoose_1.Schema({
+const userSchema = new mongoose_1.Schema({
     phone: { type: String, validate: validator.isNumeric(), required: true },
     email: {
         type: String,
@@ -27,5 +27,5 @@ const customerSchema = new mongoose_1.Schema({
     logIp: [{ type: String }],
     logToken: { type: String }
 }, { timestamps: true });
-const Customer = mongoose_1.default.model('Customer', customerSchema);
-exports.Customer = Customer;
+const User = mongoose_1.default.model('User', userSchema);
+exports.User = User;

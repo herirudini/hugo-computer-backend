@@ -3,13 +3,13 @@ import { Request, Response, NextFunction } from 'express'
 
 class messageController {
     static async createMessage(req: Request, res: Response, next: NextFunction) {
-        const customer_id: any = (<any>req).customer_id
+        const user_id: any = (<any>req).user_id
         const newText = req.body.send_text
         let newMessage: any;
 
         try {
             newMessage = await Message.create({
-                customer_id: customer_id,
+                user_id: user_id,
                 contents: newText
             })
         }
@@ -24,7 +24,7 @@ class messageController {
         let messageList;
 
         try {
-            messageList = await Message.find({ customer_id: (<any>req).customer_id })
+            messageList = await Message.find({ user_id: (<any>req).user_id })
         }
         catch (err) {
             next(err)

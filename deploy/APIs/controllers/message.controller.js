@@ -13,12 +13,12 @@ const Message_1 = require("../models/Message");
 class messageController {
     static createMessage(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
-            const customer_id = req.customer_id;
+            const user_id = req.user_id;
             const newText = req.body.send_text;
             let newMessage;
             try {
                 newMessage = yield Message_1.Message.create({
-                    customer_id: customer_id,
+                    user_id: user_id,
                     contents: newText
                 });
             }
@@ -34,7 +34,7 @@ class messageController {
         return __awaiter(this, void 0, void 0, function* () {
             let messageList;
             try {
-                messageList = yield Message_1.Message.find({ customer_id: req.customer_id });
+                messageList = yield Message_1.Message.find({ user_id: req.user_id });
             }
             catch (err) {
                 next(err);

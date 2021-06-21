@@ -1,7 +1,7 @@
 import mongoose, { Schema } from 'mongoose';
 
 interface Address {
-    customer_id: string,
+    user_id: string,
     status: string,
     country: string,
     state: string,
@@ -12,7 +12,7 @@ interface Address {
 }
 
 interface AddressData extends mongoose.Document {
-    customer_id: string,
+    user_id: string,
     status: string,
     country: string,
     state: string,
@@ -27,7 +27,7 @@ interface AddressModelInterface extends mongoose.Model<AddressData> {
 }
 
 const addressSchema = new Schema({
-    customer_id: { type: mongoose.Schema.Types.ObjectId, required: true },
+    user_id: { type: mongoose.Schema.Types.ObjectId, required: true },
     status: { type: String, required: true },
     country: { type: String, required: true },
     state: { type: String, required: true },

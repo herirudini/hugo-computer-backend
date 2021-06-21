@@ -10,10 +10,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const Invoice_1 = require("../models/Invoice");
-const Customer_1 = require("../models/Customer");
+const User_1 = require("../models/User");
 class invoiceController {
     static listInvoices(req, res, next) {
-        Invoice_1.Invoice.find({ customer_id: req.customer_id, shippingStatus: { $in: ["on process", "trouble", "standby"] } })
+        Invoice_1.Invoice.find({ user_id: req.user_id, shippingStatus: { $in: ["on process", "trouble", "standby"] } })
             .then((result) => {
             if (result == null) {
                 throw ({ name: 'not_found' });
@@ -43,7 +43,7 @@ class invoiceController {
             try {
                 if (insertCode == "123" && invoice.paymentStatus == "unpaid") {
                     updateStatus = yield Invoice_1.Invoice.findByIdAndUpdate(req.params.invoice_id, { paymentStatus: "paid-off", shippingStatus: "on process" }, { new: true });
-                    pushInvoiceId = yield Customer_1.Customer.findByIdAndUpdate(req.customer_id, { $push: { invoices: req.params.invoice_id } }, { new: true });
+                    pushInvoiceId = yield User_1.User.findByIdAndUpdate(req.user_id, { $push: { invoices: req.params.invoice_id } }, { new: true });
                 }
                 else {
                     res.status(500).json({ success: false, message: "Wrong code" });
@@ -82,7 +82,7 @@ class invoiceController {
         });
     }
     static historyInvoices(req, res, next) {
-        Invoice_1.Invoice.find({ customer_id: req.customer_id, shippingStatus: "arrived" })
+        Invoice_1.Invoice.find({ user_id: req.user_id, shippingStatus: "arrived" })
             .then((result) => {
             if (result == null) {
                 throw ({ name: 'not_found' });

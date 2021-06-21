@@ -7,7 +7,7 @@ const express_1 = require("express");
 // import IRoutes from './IRoutes'
 const order_controller_1 = __importDefault(require("../controllers/order.controller"));
 const authJwt_1 = __importDefault(require("../middlewares/authJwt"));
-class customerRouter {
+class userRouter {
     constructor() {
         this.router = express_1.Router();
         this.listOrder();
@@ -28,4 +28,4 @@ class customerRouter {
         this.router.post('/cart/checkout', order_controller_1.default.generateInvoice); //push Orders to Invoice
     }
 }
-exports.default = new customerRouter().router;
+exports.default = new userRouter().router;

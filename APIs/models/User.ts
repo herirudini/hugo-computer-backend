@@ -1,7 +1,8 @@
 import mongoose, { Schema } from 'mongoose';
 const validator = require('mongoose-validators')
 
-interface Customer {
+interface User {
+    isAdmin: boolean,
     phone: string,
     email: string,
     password: string,
@@ -9,11 +10,11 @@ interface Customer {
     address: string[],
     invoices: string[],
     wishlist: string[],
-    logIp: any[],
-    logToken: string
+    logIp: any[]
 }
 
-interface CustomerData extends mongoose.Document {
+interface UserData extends mongoose.Document {
+    isAdmin: boolean,
     phone: string,
     email: string,
     password: string,
@@ -21,15 +22,15 @@ interface CustomerData extends mongoose.Document {
     address: string[],
     invoices: string[],
     wishlist: string[],
-    logIp: any[],
-    logToken: string
+    logIp: any[]
 }
 
-interface CustomerModelInterface extends mongoose.Model<CustomerData> {
-    build(attr: Customer): CustomerData
+interface UserModelInterface extends mongoose.Model<UserData> {
+    build(attr: User): UserData
 }
 
-const customerSchema = new Schema({
+const userSchema = new Schema({
+    isAdmin: { type: Boolean, default: false, select: false },
     phone: { type: String, validate: validator.isNumeric(), required: true },
     email: {
         type: String,
@@ -44,9 +45,8 @@ const customerSchema = new Schema({
     address: [{ type: Schema.Types.ObjectId, ref: 'Address' }],
     invoices: [{ type: Schema.Types.ObjectId, ref: 'Invoice' }],
     wishlist: [{ type: Schema.Types.ObjectId, ref: 'Product' }],
-    logIp: [{ type: String }],
-    logToken: { type: String }
+    logIp: [{ type: String }]
 }, { timestamps: true });
 
-const Customer = mongoose.model<CustomerData, CustomerModelInterface>('Customer', customerSchema)
-export { Customer }
+const User = mongoose.model<UserData, UserModelInterface>('User', userSchema)
+export { User }

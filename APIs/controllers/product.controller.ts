@@ -3,23 +3,29 @@ import { Product } from '../models/Product'
 import { Request, Response, NextFunction } from 'express'
 
 class productController {
-    //     static uploadProduct(req: Request, res: Response, next: NextFunction) {
-    //         Product.create({
-    //             name: "Arduino Set",
-    //         priceTag: 500,
-    //         image: "https://lh3.googleusercontent.com/ZyL_u4kEv-IgQTqg8_Qf7rPcYzu_W-jwjRp9qNTWVSiFMErPQwYOEL2GJvaVYQwbybDxn4IrFgH6LraNk-jr2WRPvHLOqYrFCgF78HKBs0_x3ccvrC5HOT21kbDWEsKeP2B_sNEykQ=w1920-h1080",
-    //         stockAvailable: 100,
-    //         category: "Tools",
-    //         description: "Arduino with lcd module and Breadboard included"
-    //    })
-    //             .then((result: any) => {
-    //                 res.status(200).json({ message: "Upload One Product Herri Gantengs", data: result });
-    //             })
-    //             .catch((err: any) => {
-    //                 console.log(err)
-    //                 next(err)
-    //             })
-    //     }
+    static createProduct(req: Request, res: Response, next: NextFunction) {
+        const inputProductName = req.body.product_name
+        const inputPriceTag = req.body.priceTag
+        const inputImage = req.body.image
+        const inputStock = req.body.stock
+        const inputCategory = req.body.category
+        const inputDescription = req.body.description
+        Product.create({
+            name: inputProductName,
+            priceTag: inputPriceTag,
+            image: inputImage,
+            stockAvailable: inputStock,
+            category: inputCategory,
+            description: inputDescription
+        })
+            .then((result: any) => {
+                res.status(200).json({ message: "Upload One Product Herri Gantengs", data: result });
+            })
+            .catch((err: any) => {
+                console.log(err)
+                next(err)
+            })
+    }
     static allProduct(req: Request, res: Response, next: NextFunction) {
         Product.find()
             .then((result: any) => {
@@ -51,9 +57,9 @@ class productController {
             });
     }
     static async addToCart(req: Request, res: Response, next: NextFunction) {
-        const customer_id = await (<any>req).customer_id;
+        const user_id = await (<any>req).user_id;
         const product_id = req.params.product_id;
-        const orderIsExsist: any = await Order.countDocuments({ customer_id: customer_id, product_id: product_id })
+        const orderIsExsist: any = await Order.countDocuments({ user_id: user_id, product_id: product_id })
         const product: any = await Product.findById(product_id);
         const productName = product.name;
         const priceTag: number = product.priceTag;
@@ -74,7 +80,7 @@ class productController {
             if (measureStock < 0) {
                 res.status(400).json({ success: false, message: `Insufficient stock available.Product stock remaining: ${productStock}`, data: product })
             } else if (orderIsExsist == 1) {
-                const existedOrder: any = await Order.findOne({ customer_id: customer_id, product_id: product_id })
+                const existedOrder: any = await Order.findOne({ user_id: user_id, product_id: product_id })
                 const order_id = existedOrder.id
                 // console.log("orderId: " + order_id)
                 // console.log("increment:" + sendData)
@@ -84,7 +90,7 @@ class productController {
                 // console.log("orderIsNotExist")
                 createOrder = await Order.create({
                     productImage: productImage,
-                    customer_id: customer_id,
+                    user_id: user_id,
                     product_id: product_id,
                     productName: productName,
                     quantity: quantity,

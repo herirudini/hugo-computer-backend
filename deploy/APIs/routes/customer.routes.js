@@ -5,9 +5,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 // import IRoutes from './IRoutes'
-const customer_controller_1 = __importDefault(require("../controllers/customer.controller"));
+const user_controller_1 = __importDefault(require("../controllers/user.controller"));
 const authJwt_1 = __importDefault(require("../middlewares/authJwt"));
-class customerRouter {
+class userRouter {
     constructor() {
         this.router = express_1.Router();
         this.myDetails();
@@ -15,13 +15,13 @@ class customerRouter {
         this.changePassword();
     }
     myDetails() {
-        this.router.get('/customer', customer_controller_1.default.myDetails);
+        this.router.get('/user', user_controller_1.default.myDetails);
     }
     changeEmailOrPhone() {
-        this.router.patch('/customer/change-email-phone', authJwt_1.default.twoStepAuth, authJwt_1.default.uniqueData, customer_controller_1.default.changeEmailOrPhone, customer_controller_1.default.logout);
+        this.router.patch('/user/change-email-phone', authJwt_1.default.twoStepAuth, authJwt_1.default.uniqueData, user_controller_1.default.changeEmailOrPhone, user_controller_1.default.logout);
     }
     changePassword() {
-        this.router.put('/customer/change-password', authJwt_1.default.twoStepAuth, customer_controller_1.default.changePassword, customer_controller_1.default.logout);
+        this.router.put('/user/change-password', authJwt_1.default.twoStepAuth, user_controller_1.default.changePassword, user_controller_1.default.logout);
     }
 }
-exports.default = new customerRouter().router;
+exports.default = new userRouter().router;

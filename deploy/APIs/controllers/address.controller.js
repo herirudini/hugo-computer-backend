@@ -9,13 +9,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const Customer_1 = require("../models/Customer");
+const User_1 = require("../models/User");
 const Address_1 = require("../models/Address");
 class addressController {
     static createAddress(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
-            const customer_id = req.customer_id;
-            const checkAddress = yield Address_1.Address.countDocuments({ customer_id: customer_id });
+            const user_id = req.user_id;
+            const checkAddress = yield Address_1.Address.countDocuments({ user_id: user_id });
             let status;
             checkAddress == 0 ? status = "default address" : status = "secondary address";
             let createAddress;
@@ -23,7 +23,7 @@ class addressController {
             try {
                 if (checkAddress < 2) {
                     createAddress = yield Address_1.Address.create({
-                        customer_id: customer_id,
+                        user_id: user_id,
                         status: status,
                         country: req.body.country,
                         state: req.body.state,
@@ -32,7 +32,7 @@ class addressController {
                         street: req.body.street,
                         details: req.body.details
                     });
-                    pushAddressId = yield Customer_1.Customer.findByIdAndUpdate(customer_id, { $push: { address: createAddress.id } }, { new: true });
+                    pushAddressId = yield User_1.User.findByIdAndUpdate(user_id, { $push: { address: createAddress.id } }, { new: true });
                     res.status(201).json({ sucess: true, message: "New address created!", data: createAddress });
                 }
                 else {
@@ -46,7 +46,7 @@ class addressController {
         });
     }
     static listAddress(req, res, next) {
-        Address_1.Address.find({ customer_id: req.customer_id })
+        Address_1.Address.find({ user_id: req.user_id })
             .then((result) => {
             res.status(200).json({ success: true, message: "Address list", data: result });
         })
@@ -65,11 +65,11 @@ class addressController {
     }
     static setDefaultAddress(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
-            const customer_id = req.customer_id;
+            const user_id = req.user_id;
             let editOtherAddressStatus;
             let editAddress;
             try {
-                editOtherAddressStatus = yield Address_1.Address.findOneAndUpdate({ customer_id: customer_id, status: "default address" }, { status: "secondary address" }, { new: true });
+                editOtherAddressStatus = yield Address_1.Address.findOneAndUpdate({ user_id: user_id, status: "default address" }, { status: "secondary address" }, { new: true });
             }
             catch (err) {
                 next(err);
@@ -82,14 +82,14 @@ class addressController {
     }
     static deleteAddress(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
-            const customer_id = req.customer_id;
+            const user_id = req.user_id;
             const address = yield Address_1.Address.findById(req.params.address_id);
             let deleteAddress;
             let pullAddressId;
             try {
                 if (address.status != "default address") {
                     deleteAddress = yield Address_1.Address.findByIdAndDelete(req.params.address_id);
-                    pullAddressId = yield Customer_1.Customer.findByIdAndUpdate(customer_id, { $pull: { address: req.params.address_id } }, { new: true });
+                    pullAddressId = yield User_1.User.findByIdAndUpdate(user_id, { $pull: { address: req.params.address_id } }, { new: true });
                 }
                 else {
                     res.status(400).json({ success: false, message: "Cannot delete default address" });

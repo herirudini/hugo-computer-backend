@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 // import IRoutes from './IRoutes'
-const customer_controller_1 = __importDefault(require("../controllers/customer.controller"));
+const user_controller_1 = __importDefault(require("../controllers/user.controller"));
 const product_controller_1 = __importDefault(require("../controllers/product.controller"));
 const authJwt_1 = __importDefault(require("../middlewares/authJwt"));
 class publicRouter {
@@ -27,10 +27,10 @@ class publicRouter {
         this.router.get('/products/:category/:product_id', product_controller_1.default.productDetails);
     }
     signup() {
-        this.router.post('/signup', authJwt_1.default.uniqueData, customer_controller_1.default.signup);
+        this.router.post('/signup', authJwt_1.default.uniqueData, user_controller_1.default.signup);
     }
     login() {
-        this.router.put('/login', customer_controller_1.default.login);
+        this.router.put('/login', user_controller_1.default.login);
     }
 }
 exports.default = new publicRouter().router;

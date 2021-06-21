@@ -1,12 +1,12 @@
 import mongoose, { Schema } from 'mongoose';
 
 interface Message {
-    customer_id: string,
+    user_id: string,
     text: string[],
 }
 
 interface MessageData extends mongoose.Document {
-    customer_id: string,
+    user_id: string,
     text: string[],
 }
 
@@ -15,7 +15,7 @@ interface MessageModelInterface extends mongoose.Model<MessageData> {
 }
 
 const messageSchema = new Schema({
-    customer_id: {type: mongoose.Schema.Types.ObjectId, required: true},
+    user_id: {type: mongoose.Schema.Types.ObjectId, required: true},
     text: [{type: String}],
     // from: {type: String}, //sender_id = user_id/admin_id
     // to: {type: String} //receiver_id = user_id/admin_id

@@ -1,11 +1,11 @@
 import { Request, Response, NextFunction } from 'express'
 import { Invoice } from '../models/Invoice'
-import { Customer } from '../models/Customer'
+import { User } from '../models/User'
 
 
 class invoiceController {
     static listInvoices(req: Request, res: Response, next: NextFunction) {
-        Invoice.find({ customer_id: (<any>req).customer_id, shippingStatus: { $in: ["on process", "trouble", "standby"] } })
+        Invoice.find({ user_id: (<any>req).user_id, shippingStatus: { $in: ["on process", "trouble", "standby"] } })
 
             .then((result) => {
                 if (result == null) {
@@ -36,7 +36,7 @@ class invoiceController {
         try {
             if (insertCode == "123" && invoice.paymentStatus == "unpaid") {
                 updateStatus = await Invoice.findByIdAndUpdate(req.params.invoice_id, { paymentStatus: "paid-off", shippingStatus: "on process" }, { new: true });
-                pushInvoiceId = await Customer.findByIdAndUpdate((<any>req).customer_id, { $push: { invoices: req.params.invoice_id } }, { new: true })
+                pushInvoiceId = await User.findByIdAndUpdate((<any>req).user_id, { $push: { invoices: req.params.invoice_id } }, { new: true })
             } else {
                 res.status(500).json({ success: false, message: "Wrong code" })
             }
@@ -69,7 +69,7 @@ class invoiceController {
         }
     }
     static historyInvoices(req: Request, res: Response, next: NextFunction) {
-        Invoice.find({ customer_id: (<any>req).customer_id, shippingStatus: "arrived" })
+        Invoice.find({ user_id: (<any>req).user_id, shippingStatus: "arrived" })
 
             .then((result) => {
                 if (result == null) {

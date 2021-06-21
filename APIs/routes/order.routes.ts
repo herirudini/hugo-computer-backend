@@ -3,7 +3,7 @@ import { Router } from 'express'
 import orderController from '../controllers/order.controller'
 import auth from '../middlewares/authJwt'
 
-class customerRouter {
+class userRouter {
     router: Router
     constructor() {
         this.router = Router()
@@ -26,4 +26,4 @@ class customerRouter {
     }
 }
 
-export default new customerRouter().router
+export default new userRouter().router

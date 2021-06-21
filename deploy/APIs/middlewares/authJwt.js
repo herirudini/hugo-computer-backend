@@ -21,7 +21,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const jwt = __importStar(require("jsonwebtoken"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
-const Customer_1 = require("../models/Customer");
+const User_1 = require("../models/User");
 const Order_1 = require("../models/Order");
 const Invoice_1 = require("../models/Invoice");
 const Message_1 = require("../models/Message");
@@ -42,9 +42,9 @@ class auth {
                         if (err) {
                             throw ({ name: 'invalid_token' });
                         }
-                        req.customer_id = decoded.id;
+                        req.user_id = decoded.id;
                     });
-                    const author = yield Customer_1.Customer.findById(req.customer_id);
+                    const author = yield User_1.User.findById(req.user_id);
                     const logToken = author.logToken;
                     const logIp = author.logIp;
                     let ipExist = logIp.includes(ip);
@@ -66,8 +66,8 @@ class auth {
     }
     static uniqueData(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
-            const checkEmail = yield Customer_1.Customer.find({ email: req.body.new_email });
-            const checkPhone = yield Customer_1.Customer.find({ phone: req.body.new_phone });
+            const checkEmail = yield User_1.User.find({ email: req.body.new_email });
+            const checkPhone = yield User_1.User.find({ phone: req.body.new_phone });
             try {
                 if (checkEmail.length != 0) {
                     throw ({ name: 'unique_email' });
@@ -87,7 +87,7 @@ class auth {
     }
     static twoStepAuth(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
-            const author = yield Customer_1.Customer.findById(req.customer_id).select('+password');
+            const author = yield User_1.User.findById(req.user_id).select('+password');
             try {
                 if (!req.body.password) {
                     res.status(402).json({ success: false, message: "Please input password!" });
@@ -115,7 +115,7 @@ class auth {
                 if (!message) {
                     throw ({ name: 'not_found' });
                 }
-                else if (req.customer_id != message.customer_id) {
+                else if (req.user_id != message.user_id) {
                     throw ({ name: 'unauthorized' });
                 }
                 else {
@@ -135,7 +135,7 @@ class auth {
                 if (!order) {
                     throw ({ name: 'not_found' });
                 }
-                else if (req.customer_id != order.customer_id) {
+                else if (req.user_id != order.user_id) {
                     throw ({ name: 'unauthorized' });
                 }
                 else {
@@ -155,7 +155,7 @@ class auth {
                 if (!invoice) {
                     throw ({ name: 'not_found' });
                 }
-                else if (req.customer_id != invoice.customer_id) {
+                else if (req.user_id != invoice.user_id) {
                     throw ({ name: 'unauthorized' });
                 }
                 else {

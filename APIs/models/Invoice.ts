@@ -1,7 +1,7 @@
 import mongoose, { Schema } from 'mongoose';
 
 interface Invoice {
-    customer_id: string,
+    user_id: string,
     orderList: object[]
     paymentStatus: string,
     shippingStatus: string,
@@ -13,7 +13,7 @@ interface Invoice {
 }
 
 interface InvoiceData extends mongoose.Document {
-    customer_id: string,
+    user_id: string,
     orderList: object[]
     paymentStatus: string,
     shippingStatus: string,
@@ -28,7 +28,7 @@ interface InvoiceModelInterface extends mongoose.Model<InvoiceData> {
     build(attr: Invoice): InvoiceData
 }
 const invoiceSchema = new Schema({
-    customer_id: { type: mongoose.Schema.Types.ObjectId, required: true },
+    user_id: { type: mongoose.Schema.Types.ObjectId, required: true },
     bills: { type: String },
     transferCode: { type: String },
     paymentMethod: { type: String, required: true },

@@ -1,7 +1,7 @@
 import mongoose, { Schema } from 'mongoose';
 
 interface Order {
-    customer_id: string,
+    user_id: string,
     product_id: string,
     productName: string,
     productImage: string[],
@@ -12,7 +12,7 @@ interface Order {
 }
 
 interface OrderData extends mongoose.Document {
-    customer_id: string,
+    user_id: string,
     product_id: string,
     productName: string,
     productImage: string[],
@@ -27,7 +27,7 @@ interface OrderModelInterface extends mongoose.Model<OrderData> {
 }
 
 const orderSchema = new Schema({
-    customer_id: { type: Schema.Types.ObjectId, required: true },
+    user_id: { type: Schema.Types.ObjectId, required: true },
     product_id: {type: String},
     productName: {type: String},
     productImage: [{type: String}],
