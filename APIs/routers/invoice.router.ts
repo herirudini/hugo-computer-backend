@@ -26,7 +26,7 @@ class invoiceRouter {
         this.router.patch('/invoices/on-process/:invoice_id', auth.invoiceAuthor, invoiceController.confirmShipment);
     }
     public historyInvoices(): void {
-        this.router.get('/invoices/history', invoiceController.historyInvoices);
+        this.router.get('/invoices/history', invoiceController.purchasementHistory);
     }
 }
 

@@ -1,6 +1,6 @@
 import { Application } from 'express'
 import express from 'express'
-import router from './routes/routes'
+import routers from './routers/router'
 import connectDB from '../config/connect-database'
 import dotenv from 'dotenv'
 import cors from 'cors'
@@ -12,7 +12,7 @@ class App {
       this.app = express()
       this.plugin()
       this.cors()
-      this.routes()
+      this.routers()
    }
 
    protected plugin(): void {
@@ -35,8 +35,8 @@ class App {
          next();
       });
    }
-   protected routes(): void {
-      this.app.use(router)
+   protected routers(): void {
+      this.app.use(routers)
    }
 }
 const app = new App().app

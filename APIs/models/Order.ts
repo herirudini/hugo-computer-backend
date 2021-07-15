@@ -1,6 +1,7 @@
 import mongoose, { Schema } from 'mongoose';
 
 interface Order {
+    status: string
     user_id: string,
     product_id: string,
     productName: string,
@@ -12,6 +13,7 @@ interface Order {
 }
 
 interface OrderData extends mongoose.Document {
+    status: string //on-process - cancel - passed
     user_id: string,
     product_id: string,
     productName: string,
@@ -27,6 +29,7 @@ interface OrderModelInterface extends mongoose.Model<OrderData> {
 }
 
 const orderSchema = new Schema({
+    status: {type: String, default: "on-process"},
     user_id: { type: Schema.Types.ObjectId, required: true },
     product_id: {type: String},
     productName: {type: String},

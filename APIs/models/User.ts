@@ -8,7 +8,6 @@ interface User {
     password: string,
     name: string,
     address: string[],
-    invoices: string[],
     wishlist: string[],
     logIp: any[]
 }
@@ -20,7 +19,6 @@ interface UserData extends mongoose.Document {
     password: string,
     name: string,
     address: string[],
-    invoices: string[],
     wishlist: string[],
     logIp: any[]
 }
@@ -43,7 +41,6 @@ const userSchema = new Schema({
     },
     name: { type: String, required: true },
     address: [{ type: Schema.Types.ObjectId, ref: 'Address' }],
-    invoices: [{ type: Schema.Types.ObjectId, ref: 'Invoice' }],
     wishlist: [{ type: Schema.Types.ObjectId, ref: 'Product' }],
     logIp: [{ type: String }]
 }, { timestamps: true });

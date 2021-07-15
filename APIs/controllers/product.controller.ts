@@ -72,7 +72,7 @@ class productController {
         let createOrder: any;
         let increment: any;
         let sendData: any;
-        let decreaseStock: any;
+        // let decreaseStock: any;
 
         try {
             // console.log(typeof (orderIsExsist))
@@ -105,8 +105,8 @@ class productController {
             next(err)
         }
         finally {
-            decreaseStock = await Product.findByIdAndUpdate(product_id, { $inc: { stock: -quantity } }, { new: true })
-            console.log("decrease:" + decreaseStock)
+            // decreaseStock = await Product.findByIdAndUpdate(product_id, { $inc: { stock: -quantity } }, { new: true })
+            // console.log("decrease:" + decreaseStock)
             res.status(201).json({ success: true, message: "Success add to cart!", data: sendData })
         }
     }

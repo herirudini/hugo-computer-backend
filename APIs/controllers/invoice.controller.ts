@@ -1,11 +1,12 @@
 import { Request, Response, NextFunction } from 'express'
 import { Invoice } from '../models/Invoice'
+import { Product } from '../models/Product'
 import { User } from '../models/User'
 
 
 class invoiceController {
     static listInvoices(req: Request, res: Response, next: NextFunction) {
-        Invoice.find({ user_id: (<any>req).user_id, shippingStatus: { $in: ["on process", "trouble", "standby"] } })
+        Invoice.find({ user_id: (<any>req).user_id, status: { $in: ["unpaid", "paid", "shipping", "trouble"] } })
 
             .then((result) => {
                 if (result == null) {
@@ -30,13 +31,16 @@ class invoiceController {
     static async confirmPayment(req: Request, res: Response, next: NextFunction) {
         const invoice: any = await Invoice.findById(req.params.invoice_id)
         const insertCode: any = req.body.insert_code
+        const orders: any = invoice?.orders;
+        let success = false;
         let updateStatus: any;
         let pushInvoiceId: any;
 
         try {
             if (insertCode == "123" && invoice.paymentStatus == "unpaid") {
-                updateStatus = await Invoice.findByIdAndUpdate(req.params.invoice_id, { paymentStatus: "paid-off", shippingStatus: "on process" }, { new: true });
-                pushInvoiceId = await User.findByIdAndUpdate((<any>req).user_id, { $push: { invoices: req.params.invoice_id } }, { new: true })
+                updateStatus = await Invoice.findByIdAndUpdate(req.params.invoice_id, { status: "paid" }, { new: true });
+                success = true
+                // pushInvoiceId = await User.findByIdAndUpdate((<any>req).user_id, { $push: { invoices: req.params.invoice_id } }, { new: true })
             } else {
                 res.status(500).json({ success: false, message: "Wrong code" })
             }
@@ -45,30 +49,36 @@ class invoiceController {
             next(err)
         }
         finally {
-            res.status(201).json({ success: true, message: "Invoice updated", data: updateStatus })
+            if (success) {
+                for (let item = 0; item < orders.length; item++) {
+                    let updateStock;
+                    let product_id = orders[item].product_id
+                    let quantity = orders[item].quantity
+                    updateStock = await Product.findByIdAndUpdate(product_id, { $inc: { stock: -quantity } }, { new: true });
+                }
+                res.status(201).json({ success: true, message: "Invoice updated", data: updateStatus })
+            }
         }
     }
     static async confirmShipment(req: Request, res: Response, next: NextFunction) {
         const invoice: any = await Invoice.findById(req.params.invoice_id)
-        const checkStatus: any = invoice.shippingStatus
+        const checkStatus: any = invoice?.status
         const confirmation: string = req.body.confirm_shipment
-        let shippingStatus: any;
+        let status: any;
         let updateShipping: any;
 
         try {
-            if (confirmation == "arrived") shippingStatus = "arrived"
-            else if (confirmation == "not arrived" && checkStatus == "on process") shippingStatus = "trouble"
-            else shippingStatus = checkStatus
-            updateShipping = await Invoice.findByIdAndUpdate(req.params.invoice_id, { shippingStatus: shippingStatus }, { new: true })
+            if (confirmation == "arrived") status = "arrived"
+            else if (confirmation == "not arrived" && checkStatus == "shipping") status = "trouble"
+            else status = checkStatus
+            updateShipping = await Invoice.findByIdAndUpdate(req.params.invoice_id, { status: status }, { new: true });
+            res.status(201).json({ success: true, message: "Invoice updated", data: updateShipping })
         }
         catch (err) {
             next(err)
         }
-        finally {
-            res.status(201).json({ success: true, message: "Invoice updated", data: updateShipping })
-        }
     }
-    static historyInvoices(req: Request, res: Response, next: NextFunction) {
+    static purchasementHistory(req: Request, res: Response, next: NextFunction) {
         Invoice.find({ user_id: (<any>req).user_id, shippingStatus: "arrived" })
 
             .then((result) => {

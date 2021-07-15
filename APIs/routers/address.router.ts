@@ -15,7 +15,7 @@ class addressRouter {
         this.router.get('/address', addressController.listAddress);
     }
     public createAddress(): void {
-        this.router.post('/address', addressController.createAddress, addressController.listAddress);
+        this.router.post('/address', addressController.createAddress);
     }
     public checkAddress(): void {
         this.router.get('/address/:address_id', addressController.checkAddress);
@@ -24,7 +24,7 @@ class addressRouter {
         this.router.patch('/address/:address_id', addressController.setDefaultAddress);
     }
     public deleteAddress(): void {
-        this.router.delete('/address/:address_id', addressController.deleteAddress, addressController.listAddress);
+        this.router.delete('/address/:address_id', addressController.deleteAddress);
     }
 }
 
